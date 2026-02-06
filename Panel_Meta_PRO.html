@@ -2,68 +2,193 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title> index.html </title>
+<title>Panel Meta Ads PRO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{font-family:Segoe UI,Arial;background:#f2f4f8;padding:20px}
-.container{max-width:1000px;margin:auto;background:white;padding:20px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.1)}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-input{width:100%;padding:10px;font-size:16px;border-radius:8px;border:2px solid #ddd}
-label{font-size:13px;color:#555;font-weight:bold}
-.section{background:#fafbff;padding:15px;border-radius:10px}
-.green{color:#2e7d32;font-weight:bold}
-.yellow{color:#f9a825;font-weight:bold}
-.red{color:#c62828;font-weight:bold}
-.status{font-size:12px;color:#777;margin-bottom:10px}
-button{padding:8px 14px;border:0;border-radius:8px;background:#3f51b5;color:white;font-weight:bold;cursor:pointer;margin-bottom:10px}
+:root{
+ --bg:#f4f6fb;
+ --card:#ffffff;
+ --primary:#1a237e;
+ --accent:#3f51b5;
+ --border:#e4e7ef;
+ --ok:#2e7d32;
+ --hold:#f9a825;
+ --cut:#c62828;
+}
+
+body{
+ margin:0;
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+ background:var(--bg);
+ color:#222;
+}
+
+.wrapper{
+ max-width:1200px;
+ margin:auto;
+ padding:30px;
+}
+
+.header{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:20px;
+}
+
+h1{
+ margin:0;
+ font-size:28px;
+ color:var(--primary);
+}
+
+button{
+ background:var(--accent);
+ color:white;
+ border:none;
+ padding:10px 18px;
+ border-radius:8px;
+ font-weight:bold;
+ cursor:pointer;
+}
+
+.status{
+ font-size:13px;
+ color:#666;
+ margin-bottom:20px;
+}
+
+.grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:20px;
+}
+
+.card{
+ background:var(--card);
+ padding:20px;
+ border-radius:14px;
+ box-shadow:0 10px 30px rgba(0,0,0,.05);
+}
+
+label{
+ display:block;
+ font-size:12px;
+ font-weight:700;
+ color:#6b7280;
+ margin-top:12px;
+}
+
+input{
+ width:100%;
+ padding:12px;
+ border-radius:8px;
+ border:1px solid var(--border);
+ font-size:16px;
+ font-weight:600;
+ margin-top:4px;
+}
+
+.iva{
+ margin-top:10px;
+ font-weight:bold;
+ color:#555;
+}
+
+.metric{
+ margin-bottom:18px;
+}
+
+.metric h3{
+ margin:0 0 8px 0;
+ font-size:15px;
+ color:#444;
+}
+
+.state{
+ font-size:18px;
+ font-weight:900;
+ margin-top:8px;
+}
+
+.ok{color:var(--ok);}
+.hold{color:var(--hold);}
+.cut{color:var(--cut);}
+
+.divider{
+ height:1px;
+ background:var(--border);
+ margin:16px 0;
+}
 </style>
 </head>
 <body>
-<div class="container">
-<h2>Panel Meta Ads PRO</h2>
 
-<button onclick="actualizarCotizacion()">Actualizar cotización</button>
-<div class="status" id="status">Actualizando cotización…</div>
+<div class="wrapper">
+  <div class="header">
+    <h1>Panel Meta Ads PRO</h1>
+    <button onclick="actualizarCotizacion()">Actualizar cotización</button>
+  </div>
 
-<div class="grid">
-<div class="section">
-<label>USD</label>
-<input id="usd" oninput="calcFrom('usd')">
-<label>ARS</label>
-<input id="ars" oninput="calcFrom('ars')">
-<label>CLP Total (con IVA)</label>
-<input id="clp" oninput="calcFrom('clp')">
-<label>Neto Meta CLP (sin IVA)</label>
-<input id="neto" oninput="calcFrom('neto')">
-<div>IVA 19%: <span id="iva">0</span></div>
-</div>
+  <div class="status" id="status">Actualizando cotización…</div>
 
-<div class="section">
-<h3>Métricas Meta Ads (ingresar CLP neto)</h3>
+  <div class="grid">
 
-<p>CPC sin clic: <span id="cpc1"></span></p>
-<p>CPC con clic: <span id="cpc2"></span></p>
-<label>Tu CPC real (CLP)</label>
-<input id="cpcR" oninput="evalMetrics()">
-<div id="cpcState"></div>
+    <!-- Conversor -->
+    <div class="card">
+      <label>USD</label>
+      <input id="usd" oninput="calcFrom('usd')">
 
-<hr>
+      <label>ARS</label>
+      <input id="ars" oninput="calcFrom('ars')">
 
-<p>Pago sin iniciar: <span id="pay1"></span></p>
-<p>Pago iniciado: <span id="pay2"></span></p>
-<label>Tu pago real (CLP)</label>
-<input id="payR" oninput="evalMetrics()">
-<div id="payState"></div>
+      <label>CLP Total (con IVA)</label>
+      <input id="clp" oninput="calcFrom('clp')">
 
-<hr>
+      <label>Neto Meta CLP (sin IVA)</label>
+      <input id="neto" oninput="calcFrom('neto')">
 
-<p>Compra sin venta: <span id="buy1"></span></p>
-<p>Compra con venta: <span id="buy2"></span></p>
-<label>Tu CPA real (CLP)</label>
-<input id="buyR" oninput="evalMetrics()">
-<div id="buyState"></div>
+      <div class="iva">
+        IVA 19%: <span id="iva">0</span>
+      </div>
+    </div>
 
-</div>
-</div>
+    <!-- Métricas -->
+    <div class="card">
+
+      <div class="metric">
+        <h3>🔵 CPC</h3>
+        <div>Sin clic: <span id="cpc1"></span></div>
+        <div>Con clic: <span id="cpc2"></span></div>
+        <label>Tu CPC real (CLP)</label>
+        <input id="cpcR" oninput="evalMetrics()">
+        <div id="cpcState" class="state"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="metric">
+        <h3>🟠 Pago iniciado</h3>
+        <div>Sin pago: <span id="pay1"></span></div>
+        <div>Con pago: <span id="pay2"></span></div>
+        <label>Tu pago real (CLP)</label>
+        <input id="payR" oninput="evalMetrics()">
+        <div id="payState" class="state"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="metric">
+        <h3>🔴 Compra</h3>
+        <div>Sin compra: <span id="buy1"></span></div>
+        <div>Con compra: <span id="buy2"></span></div>
+        <label>Tu CPA real (CLP)</label>
+        <input id="buyR" oninput="evalMetrics()">
+        <div id="buyState" class="state"></div>
+      </div>
+
+    </div>
+  </div>
 </div>
 
 <script>
@@ -137,11 +262,9 @@ function updateLimits(){
  evalMetrics();
 }
 
-function stateCLP(val,a,b){
- if(isNaN(val)) return "";
- if(val<=a) return "<span class='green'>OK</span>";
- if(val<=b) return "<span class='yellow'>Aguantar</span>";
- return "<span class='red'>Cortar</span>";
+function setState(el,txt,cls){
+ el.innerText=txt;
+ el.className="state "+cls;
 }
 
 function evalMetrics(){
@@ -156,9 +279,23 @@ function evalMetrics(){
  let buyA=usdToCLPNet(9);
  let buyB=usdToCLPNet(13);
 
- cpcState.innerHTML=stateCLP(cpc,cpcA,cpcB);
- payState.innerHTML=stateCLP(pay,payA,payB);
- buyState.innerHTML=stateCLP(buy,buyA,buyB);
+ if(!isNaN(cpc)){
+   if(cpc<=cpcA) setState(cpcState,"OK","ok");
+   else if(cpc<=cpcB) setState(cpcState,"AGUANTAR","hold");
+   else setState(cpcState,"CORTAR","cut");
+ }
+
+ if(!isNaN(pay)){
+   if(pay<=payA) setState(payState,"OK","ok");
+   else if(pay<=payB) setState(payState,"AGUANTAR","hold");
+   else setState(payState,"CORTAR","cut");
+ }
+
+ if(!isNaN(buy)){
+   if(buy<=buyA) setState(buyState,"OK","ok");
+   else if(buy<=buyB) setState(buyState,"AGUANTAR","hold");
+   else setState(buyState,"CORTAR","cut");
+ }
 }
 
 actualizarCotizacion();
@@ -166,4 +303,3 @@ setInterval(actualizarCotizacion,900000);
 </script>
 </body>
 </html>
-
