@@ -198,7 +198,7 @@ const IVA = 1.19;
 
 function actualizarCotizacion(){
  document.getElementById("status").innerText="Actualizando cotización…";
- fetch("https://api.frankfurter.app/latest?from=USD&to=ARS,CLP")
+ fetch("https://open.er-api.com/v6/latest/USD")
  .then(r=>r.json())
  .then(d=>{
    TASA_ARS = d.rates.ARS;
