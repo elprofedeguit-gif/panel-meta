@@ -90,9 +90,10 @@ input{
 }
 
 .iva{
- margin-top:10px;
- font-weight:bold;
- color:#555;
+ margin-top:12px;
+ font-weight:800;
+ font-size:18px;
+ color:#1a237e;
 }
 
 .metric{
@@ -142,14 +143,14 @@ input{
       <label>ARS</label>
       <input id="ars" oninput="calcFrom('ars')">
 
-      <label>CLP Total (con IVA)</label>
+      <label>Valor del dólar en CLP (total)</label>
       <input id="clp" oninput="calcFrom('clp')">
 
-      <label>Neto Meta CLP (sin IVA)</label>
+      <label>Neto Meta (sin IVA)</label>
       <input id="neto" oninput="calcFrom('neto')">
 
       <div class="iva">
-        IVA 19%: <span id="iva">0</span>
+        IVA 19% agregado por Meta: <span id="iva">0</span>
       </div>
     </div>
 
