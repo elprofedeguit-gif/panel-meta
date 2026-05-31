@@ -1,112 +1,9 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<title>Panel Meta Ads PRO</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-:root{
- --bg:#f4f6fb;
- --card:#ffffff;
- --primary:#1a237e;
- --accent:#3f51b5;
- --border:#e4e7ef;
- --ok:#2e7d32;
- --hold:#f9a825;
- --cut:#c62828;
-}
-body{margin:0;font-family:Segoe UI,Arial;background:var(--bg);}
-.wrapper{max-width:1200px;margin:auto;padding:30px;}
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
-h1{margin:0;color:var(--primary);}
-button{background:var(--accent);color:white;border:0;padding:10px 18px;border-radius:8px;font-weight:bold;cursor:pointer;}
-.status{font-size:13px;color:#666;margin-bottom:20px;}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
-.card{background:var(--card);padding:20px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.05);}
-label{display:block;font-size:12px;font-weight:700;color:#6b7280;margin-top:12px;}
-input{width:100%;padding:12px;border-radius:8px;border:1px solid var(--border);font-size:16px;font-weight:600;margin-top:4px;box-sizing: border-box;}
-.iva{margin-top:12px;font-weight:800;font-size:18px;color:#1a237e;}
-.metric{margin-bottom:18px;}
-.state{font-size:18px;font-weight:900;margin-top:8px;}
-.ok{color:var(--ok);}
-.hold{color:var(--hold);}
-.cut{color:var(--cut);}
-.divider{height:1px;background:var(--border);margin:16px 0;}
-</style>
-</head>
-<body>
-
-<div class="wrapper">
-  <div class="header">
-    <h1>Panel Meta Ads PRO</h1>
-    <button onclick="actualizarCotizacion()">Actualizar cotización</button>
-  </div>
-
-  <div class="status" id="status">Actualizando cotización…</div>
-
-  <div class="grid">
-
-    <div class="card">
-      <label>USD</label>
-      <input id="usd" oninput="calcFrom('usd')">
-
-      <label>ARS</label>
-      <input id="ars" oninput="calcFrom('ars')">
-
-      <label>Valor del dólar en CLP (total con IVA)</label>
-      <input id="clp" oninput="calcFrom('clp')">
-
-      <label>Neto Meta CLP (sin IVA)</label>
-      <input id="neto" oninput="calcFrom('neto')">
-
-      <div class="iva">
-        IVA 19% agregado por Meta: <span id="iva">0</span> CLP
-      </div>
-    </div>
-
-    <div class="card">
-
-      <div class="metric">
-        <h3>🔵 CPC</h3>
-        <div>Excelente (o menos): <span id="cpc1"></span> CLP</div>
-        <div>Alerta (hasta): <span id="cpc2"></span> CLP</div>
-        <label>Tu CPC real (CLP)</label>
-        <input id="cpcR" oninput="evalMetrics()">
-        <div id="cpcState" class="state"></div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="metric">
-        <h3>🟠 Pago iniciado</h3>
-        <div>Excelente (o menos): <span id="pay1"></span> CLP</div>
-        <div>Alerta (hasta): <span id="pay2"></span> CLP</div>
-        <label>Tu pago real (CLP)</label>
-        <input id="payR" oninput="evalMetrics()">
-        <div id="payState" class="state"></div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="metric">
-        <h3>🔴 Compra</h3>
-        <div>Excelente (o menos): <span id="buy1"></span> CLP</div>
-        <div>Alerta (hasta): <span id="buy2"></span> CLP</div>
-        <label>Tu CPA real (CLP)</label>
-        <input id="buyR" oninput="evalMetrics()">
-        <div id="buyState" class="state"></div>
-      </div>
-
-    </div>
-  </div>
-</div>
-
 <script>
 let TASA_ARS = 1500;
 let TASA_CLP = 900;
 const IVA = 1.19;
 
-// Declaración explícita de elementos del DOM
+// Declaración explícita de los elementos para evitar errores de lectura
 const elUsd = document.getElementById("usd");
 const elArs = document.getElementById("ars");
 const elClp = document.getElementById("clp");
@@ -135,7 +32,7 @@ function actualizarCotizacion(){
  })
  .catch(()=>{
    document.getElementById("status").innerText =
-     "No se pudo actualizar la cotización automática. Usando tasas por defecto.";
+     "No se pudo actualizar la cotización. Usando tasas por defecto.";
  });
 }
 
@@ -154,27 +51,45 @@ function calcFrom(src){
  let input = document.getElementById(src);
  if(input.value==="") { limpiarTodo(); return; }
 
- let v=parseFloat(input.value);
+ let v = parseFloat(input.value);
  if(isNaN(v)) return;
 
  let usdVal = 0;
 
- // MATEMÁTICA CORREGIDA:
- if(src=="usd")  usdVal = v;
- if(src=="ars")  usdVal = v / TASA_ARS;
- if(src=="clp")  usdVal = v / TASA_CLP; // CLP Total directo a USD
- if(src=="neto") usdVal = (v * IVA) / TASA_CLP; // El neto se multiplica por 1.19 para ser el total en CLP y luego a USD
+ // ==========================================
+ // MATEMÁTICA CORREGIDA (Pasar todo a base USD)
+ // ==========================================
+ if(src == "usd") {
+   usdVal = v;
+ }
+ if(src == "ars") {
+   usdVal = v / TASA_ARS;
+ }
+ if(src == "clp") {
+   // El campo CLP es el TOTAL (Con IVA). Para llevarlo a USD, dividimos por la tasa.
+   usdVal = v / TASA_CLP; 
+ }
+ if(src == "neto") {
+   // El campo Neto NO tiene IVA. Primero le sumamos el IVA (v * 1.19) y luego lo pasamos a USD.
+   usdVal = (v * IVA) / TASA_CLP; 
+ }
 
+ // ==========================================
+ // CALCULAR EL RESTO DE LOS CAMPOS DESDE USD
+ // ==========================================
  let arsVal = usdVal * TASA_ARS;
- let clpVal = usdVal * TASA_CLP;
- let netoVal = clpVal / IVA;
+ let clpVal = usdVal * TASA_CLP;        // Total con IVA en CLP
+ let netoVal = clpVal / IVA;            // Neto sin IVA en CLP
 
- if(src!=="usd")  elUsd.value = usdVal.toFixed(2);
- if(src!=="ars")  elArs.value = Math.round(arsVal);
- if(src!=="clp")  elClp.value = Math.round(clpVal);
- if(src!=="neto") elNeto.value = Math.round(netoVal);
+ // Asignar valores redondeados a los inputs correspondientes
+ if(src !== "usd")  elUsd.value = usdVal.toFixed(2);
+ if(src !== "ars")  elArs.value = Math.round(arsVal);
+ if(src !== "clp")  elClp.value = Math.round(clpVal);
+ if(src !== "neto") elNeto.value = Math.round(netoVal);
 
+ // El IVA es simplemente la resta entre el Total (clp) y el Neto
  elIva.innerText = Math.round(clpVal - netoVal);
+ 
  updateLimits();
 }
 
@@ -198,39 +113,37 @@ function setState(el,txt,cls){
 }
 
 function evalMetrics(){
- let cpc=parseFloat(elCpcR.value);
- let pay=parseFloat(elPayR.value);
- let buy=parseFloat(elBuyR.value);
+ let cpc = parseFloat(elCpcR.value);
+ let pay = parseFloat(elPayR.value);
+ let buy = parseFloat(elBuyR.value);
 
- let cpcA=usdToCLPMarket(0.5);
- let cpcB=usdToCLPMarket(0.7);
- let payA=usdToCLPMarket(2.5);
- let payB=usdToCLPMarket(3.5);
- let buyA=usdToCLPMarket(9);
- let buyB=usdToCLPMarket(13);
+ let cpcA = usdToCLPMarket(0.5);
+ let cpcB = usdToCLPMarket(0.7);
+ let payA = usdToCLPMarket(2.5);
+ let payB = usdToCLPMarket(3.5);
+ let buyA = usdToCLPMarket(9);
+ let buyB = usdToCLPMarket(13);
 
  if(!isNaN(cpc)){
-   if(cpc<=cpcA) setState(elCpcState,"OK","ok");
-   else if(cpc<=cpcB) setState(elCpcState,"AGUANTAR","hold");
+   if(cpc <= cpcA) setState(elCpcState,"OK","ok");
+   else if(cpc <= cpcB) setState(elCpcState,"AGUANTAR","hold");
    else setState(elCpcState,"CORTAR","cut");
  } else { elCpcState.innerText = ""; }
 
  if(!isNaN(pay)){
-   if(pay<=payA) setState(elPayState,"OK","ok");
-   else if(pay<=payB) setState(elPayState,"AGUANTAR","hold");
+   if(pay <= payA) setState(elPayState,"OK","ok");
+   else if(pay <= payB) setState(elPayState,"AGUANTAR","hold");
    else setState(elPayState,"CORTAR","cut");
  } else { elPayState.innerText = ""; }
 
  if(!isNaN(buy)){
-   if(buy<=buyA) setState(elBuyState,"OK","ok");
-   else if(buy<=buyB) setState(elBuyState,"AGUANTAR","hold");
+   if(buy <= buyA) setState(elBuyState,"OK","ok");
+   else if(buy <= buyB) setState(elBuyState,"AGUANTAR","hold");
    else setState(elBuyState,"CORTAR","cut");
  } else { elBuyState.innerText = ""; }
 }
 
-// Inicialización
+// Inicialización automática
 actualizarCotizacion();
 setInterval(actualizarCotizacion,900000);
 </script>
-</body>
-</html>
